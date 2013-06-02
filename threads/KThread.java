@@ -4,6 +4,8 @@ import nachos.machine.Lib;
 import nachos.machine.Machine;
 import nachos.machine.TCB;
 
+import java.util.LinkedList;
+
 /**
  * A KThread is a thread that can be used to execute Nachos kernel code. Nachos
  * allows multiple threads to run concurrently.
@@ -58,12 +60,13 @@ public class KThread {
 
             createIdleThread();
         }
+        waitingThreads = new LinkedList<KThread>();
     }
 
     /**
      * Allocate a new KThread.
      *
-     * @param    target    the object whose <tt>run</tt> method is called.
+     * @param target the object whose <tt>run</tt> method is called.
      */
     public KThread(Runnable target) {
         this();
@@ -73,7 +76,7 @@ public class KThread {
     /**
      * Set the target of this thread.
      *
-     * @param    target    the object whose <tt>run</tt> method is called.
+     * @param target the object whose <tt>run</tt> method is called.
      * @return this thread.
      */
     public KThread setTarget(Runnable target) {
@@ -87,7 +90,7 @@ public class KThread {
      * Set the name of this thread. This name is used for debugging purposes
      * only.
      *
-     * @param    name    the name to give to this thread.
+     * @param name the name to give to this thread.
      * @return this thread.
      */
     public KThread setName(String name) {
@@ -195,6 +198,10 @@ public class KThread {
 
         currentThread.status = statusFinished;
 
+        for (KThread t : currentThread().waitingThreads) {
+            t.ready();
+        }
+
         sleep();
     }
 
@@ -278,6 +285,14 @@ public class KThread {
 
         assert (this != currentThread);
 
+        boolean intStatus = Machine.interrupt().disable();
+
+        if (this.status != statusFinished) {
+            waitingThreads.add(currentThread);
+            KThread.sleep();
+        }
+
+        Machine.interrupt().restore(intStatus);
     }
 
     /**
@@ -332,9 +347,9 @@ public class KThread {
      * changed from running to blocked or ready (depending on whether the
      * thread is sleeping or yielding).
      *
-     * @param    finishing    <tt>true</tt> if the current thread is
-     * finished, and should be destroyed by the new
-     * thread.
+     * @param finishing <tt>true</tt> if the current thread is
+     *                  finished, and should be destroyed by the new
+     *                  thread.
      */
     private void run() {
         assert (Machine.interrupt().disabled());
@@ -415,7 +430,7 @@ public class KThread {
     /**
      * Additional state used by schedulers.
      *
-     * @see    nachos.threads.PriorityScheduler.ThreadState
+     * @see nachos.threads.PriorityScheduler.ThreadState
      */
     public Object schedulingState = null;
 
@@ -449,4 +464,6 @@ public class KThread {
     private static KThread currentThread = null;
     private static KThread toBeDestroyed = null;
     private static KThread idleThread = null;
+
+    private LinkedList<KThread> waitingThreads;
 }
