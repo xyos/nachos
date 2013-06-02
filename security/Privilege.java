@@ -2,17 +2,14 @@
 
 package nachos.security;
 
-import nachos.machine.*;
+import nachos.machine.SerialConsole;
+import nachos.machine.Stats;
 import nachos.threads.KThread;
-
-import java.security.PrivilegedAction;
-import java.security.PrivilegedExceptionAction;
-import java.security.PrivilegedActionException;
 
 /**
  * A capability that allows privileged access to the Nachos machine.
- *
- * <p>
+ * <p/>
+ * <p/>
  * Some privileged operations are guarded by the Nachos security manager:
  * <ol>
  * <li>creating threads
@@ -20,8 +17,8 @@ import java.security.PrivilegedActionException;
  * <li>exit with specific status code
  * </ol>
  * These operations can only be performed through <tt>doPrivileged()</tt>.
- *
- * <p>
+ * <p/>
+ * <p/>
  * Some privileged operations require a capability:
  * <ol>
  * <li>scheduling interrupts
@@ -33,8 +30,8 @@ import java.security.PrivilegedActionException;
  * </ol>
  * These operations can be directly performed using a <tt>Privilege</tt>
  * object.
- *
- * <p>
+ * <p/>
+ * <p/>
  * The Nachos kernel should <i>never</i> be able to directly perform any of
  * these privileged operations. If you have discovered a loophole somewhere,
  * notify someone.
@@ -47,31 +44,41 @@ public abstract class Privilege {
      */
     public Privilege() {
     }
-    
+
     /**
      * Perform the specified action with privilege.
      *
-     * @param	action	the action to perform.
+     * @param    action    the action to perform.
      */
     public abstract void doPrivileged(Runnable action);
-    
+
     /**
      * Exit Nachos with the specified status.
      *
-     * @param	exitStatus	the exit status of the Nachos process.
+     * @param    exitStatus    the exit status of the Nachos process.
      */
     public abstract void exit(int exitStatus);
 
-    /** Nachos runtime statistics. */
+    /**
+     * Nachos runtime statistics.
+     */
     public Stats stats = null;
 
-    /** Provides access to some private <tt>Machine</tt> methods. */
+    /**
+     * Provides access to some private <tt>Machine</tt> methods.
+     */
     public MachinePrivilege machine = null;
-    /** Provides access to some private <tt>Interrupt</tt> methods. */
+    /**
+     * Provides access to some private <tt>Interrupt</tt> methods.
+     */
     public InterruptPrivilege interrupt = null;
-    /** Provides access to some private <tt>Processor</tt> methods. */
+    /**
+     * Provides access to some private <tt>Processor</tt> methods.
+     */
     public ProcessorPrivilege processor = null;
-    /** Provides access to some private <tt>TCB</tt> methods. */
+    /**
+     * Provides access to some private <tt>TCB</tt> methods.
+     */
     public TCBPrivilege tcb = null;
 
     /**
@@ -79,12 +86,12 @@ public abstract class Privilege {
      * methods.
      */
     public interface MachinePrivilege {
-	/**
-	 * Install a hardware console.
-	 *
-	 * @param	console	the new hardware console.
-	 */
-	public void setConsole(SerialConsole console);
+        /**
+         * Install a hardware console.
+         *
+         * @param    console    the new hardware console.
+         */
+        public void setConsole(SerialConsole console);
     }
 
     /**
@@ -92,25 +99,25 @@ public abstract class Privilege {
      * methods.
      */
     public interface InterruptPrivilege {
-	/**
-	 * Schedule an interrupt to occur at some time in the future.
-	 *
-	 * @param	when	the number of ticks until the interrupt should
-	 *			occur.
-	 * @param	type	a name for the type of interrupt being
-	 *			scheduled.
-	 * @param	handler	the interrupt handler to call.
-	 */
-	public void schedule(long when, String type, Runnable handler);
-	
-	/**
-	 * Advance the simulated time.
-	 *
-	 * @param	<tt>true</tt> if the current thread is running kernel
-	 *		code, <tt>false</tt> if the current thread is running
-	 *		MIPS user code.
-	 */
-	public void tick(boolean inKernelMode);
+        /**
+         * Schedule an interrupt to occur at some time in the future.
+         *
+         * @param    when    the number of ticks until the interrupt should
+         * occur.
+         * @param    type    a name for the type of interrupt being
+         * scheduled.
+         * @param    handler    the interrupt handler to call.
+         */
+        public void schedule(long when, String type, Runnable handler);
+
+        /**
+         * Advance the simulated time.
+         *
+         * @param    <tt>true</tt> if the current thread is running kernel
+         * code, <tt>false</tt> if the current thread is running
+         * MIPS user code.
+         */
+        public void tick(boolean inKernelMode);
     }
 
     /**
@@ -118,31 +125,32 @@ public abstract class Privilege {
      * methods.
      */
     public interface ProcessorPrivilege {
-	/**
-	 * Flush the processor pipeline in preparation for switching to kernel
-	 * mode.
-	 */
-	public void flushPipe();
+        /**
+         * Flush the processor pipeline in preparation for switching to kernel
+         * mode.
+         */
+        public void flushPipe();
     }
 
     /**
      * An interface that provides access to some private <tt>TCB</tt> methods.
      */
     public interface TCBPrivilege {
-	/**
-	 * Associate the current TCB with the specified <tt>KThread</tt>.
-	 * <tt>AutoGrader.runningThread()</tt> <i>must</i> call this method
-	 * before returning.
-	 *
-	 * @param	thread	the current thread.
-	 */
-	public void associateThread(KThread thread);
-	/**
-	 * Authorize the TCB associated with the specified thread to be
-	 * destroyed.
-	 *
-	 * @param	thread	the thread whose TCB is about to be destroyed.
-	 */
-	public void authorizeDestroy(KThread thread);
-    }    
+        /**
+         * Associate the current TCB with the specified <tt>KThread</tt>.
+         * <tt>AutoGrader.runningThread()</tt> <i>must</i> call this method
+         * before returning.
+         *
+         * @param    thread    the current thread.
+         */
+        public void associateThread(KThread thread);
+
+        /**
+         * Authorize the TCB associated with the specified thread to be
+         * destroyed.
+         *
+         * @param    thread    the thread whose TCB is about to be destroyed.
+         */
+        public void authorizeDestroy(KThread thread);
+    }
 }

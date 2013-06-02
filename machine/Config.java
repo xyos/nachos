@@ -2,11 +2,11 @@
 
 package nachos.machine;
 
-import java.util.HashMap;
 import java.io.File;
 import java.io.FileReader;
 import java.io.Reader;
 import java.io.StreamTokenizer;
+import java.util.HashMap;
 
 /**
  * Provides routines to access the Nachos configuration.
@@ -16,166 +16,161 @@ public final class Config {
      * Load configuration information from the specified file. Must be called
      * before the Nachos security manager is installed.
      *
-     * @param	fileName	the name of the file containing the
-     *				configuration to use.
+     * @param    fileName    the name of the file containing the
+     * configuration to use.
      */
     public static void load(String fileName) {
-	System.out.print(" config");
-	
-	assert(!loaded);
-	loaded = true;
-	
-	configFile = fileName;
-	
-	try {
-	    config = new HashMap();
-	
-	    File file = new File(configFile);
-	    Reader reader = new FileReader(file);
-	    StreamTokenizer s = new StreamTokenizer(reader);
+        System.out.print(" config");
 
-	    s.resetSyntax();
-	    s.whitespaceChars(0x00, 0x20);
-	    s.wordChars(0x21, 0xFF);
-	    s.eolIsSignificant(true);
-	    s.commentChar('#');
-	    s.quoteChar('"');
+        assert (!loaded);
+        loaded = true;
 
-	    int line = 1;
+        configFile = fileName;
 
-	    s.nextToken();
+        try {
+            config = new HashMap();
 
-	    while (true) {
-		if (s.ttype == StreamTokenizer.TT_EOF)
-		    break;
+            File file = new File(configFile);
+            Reader reader = new FileReader(file);
+            StreamTokenizer s = new StreamTokenizer(reader);
 
-		if (s.ttype == StreamTokenizer.TT_EOL) {
-		    line++;
-		    s.nextToken();
-		    continue;
-		}
+            s.resetSyntax();
+            s.whitespaceChars(0x00, 0x20);
+            s.wordChars(0x21, 0xFF);
+            s.eolIsSignificant(true);
+            s.commentChar('#');
+            s.quoteChar('"');
 
-		if (s.ttype != StreamTokenizer.TT_WORD)
-		    loadError(line);
+            int line = 1;
 
-		String key = s.sval;
+            s.nextToken();
 
-		if (s.nextToken() != StreamTokenizer.TT_WORD ||
-		    !s.sval.equals("="))
-		    loadError(line);
+            while (true) {
+                if (s.ttype == StreamTokenizer.TT_EOF)
+                    break;
 
-		if (s.nextToken() != StreamTokenizer.TT_WORD && s.ttype != '"')
-		    loadError(line);
+                if (s.ttype == StreamTokenizer.TT_EOL) {
+                    line++;
+                    s.nextToken();
+                    continue;
+                }
 
-		String value = s.sval;
+                if (s.ttype != StreamTokenizer.TT_WORD)
+                    loadError(line);
 
-		// ignore everything after first string
-		while (s.nextToken() != StreamTokenizer.TT_EOL &&
-		       s.ttype != StreamTokenizer.TT_EOF);
+                String key = s.sval;
 
-		if (config.get(key) != null)
-		    loadError(line);
+                if (s.nextToken() != StreamTokenizer.TT_WORD ||
+                        !s.sval.equals("="))
+                    loadError(line);
 
-		config.put(key, value);
-		line++;
-	    }
-	}
-	catch (Throwable e) {
-	    System.err.println("Error loading " + configFile);
-	    System.exit(1);
-	}
+                if (s.nextToken() != StreamTokenizer.TT_WORD && s.ttype != '"')
+                    loadError(line);
+
+                String value = s.sval;
+
+                // ignore everything after first string
+                while (s.nextToken() != StreamTokenizer.TT_EOL &&
+                        s.ttype != StreamTokenizer.TT_EOF) ;
+
+                if (config.get(key) != null)
+                    loadError(line);
+
+                config.put(key, value);
+                line++;
+            }
+        } catch (Throwable e) {
+            System.err.println("Error loading " + configFile);
+            System.exit(1);
+        }
     }
 
     private static void loadError(int line) {
-	System.err.println("Error in " + configFile + " line " + line);
-	System.exit(1);
+        System.err.println("Error in " + configFile + " line " + line);
+        System.exit(1);
     }
 
     private static void configError(String message) {
-	System.err.println("");
-	System.err.println("Error in " + configFile + ": " + message);
-	System.exit(1);
+        System.err.println("");
+        System.err.println("Error in " + configFile + ": " + message);
+        System.exit(1);
     }
 
     /**
      * Get the value of a key in <tt>nachos.conf</tt>.
      *
-     * @param	key	the key to look up.
-     * @return	the value of the specified key, or <tt>null</tt> if it is not
-     *		present.
+     * @param    key    the key to look up.
+     * @return the value of the specified key, or <tt>null</tt> if it is not
+     * present.
      */
     public static String getString(String key) {
-	return (String) config.get(key);
+        return (String) config.get(key);
     }
 
     /**
      * Get the value of an integer key in <tt>nachos.conf</tt>.
      *
-     * @param	key	the key to look up.
-     * @return	the value of the specified key.
+     * @param    key    the key to look up.
+     * @return the value of the specified key.
      */
     public static int getInteger(String key) {
-	try {
-	    String value = getString(key);
-	    if (value == null)
-		configError("missing int " + key);
-	    
-	    return Integer.parseInt(value);
-	}
-	catch (NumberFormatException e) {
-	    configError(key + " should be an integer");
-	    
-	    Lib.assertNotReached();
-	    return 0;
-	}
+        try {
+            String value = getString(key);
+            if (value == null)
+                configError("missing int " + key);
+
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            configError(key + " should be an integer");
+
+            Lib.assertNotReached();
+            return 0;
+        }
     }
 
     /**
      * Get the value of a double key in <tt>nachos.conf</tt>.
      *
-     * @param	key	the key to look up.
-     * @return	the value of the specified key.
+     * @param    key    the key to look up.
+     * @return the value of the specified key.
      */
     public static double getDouble(String key) {
-	try {
-	    String value = getString(key);
-	    if (value == null)
-		configError("missing double " + key);
+        try {
+            String value = getString(key);
+            if (value == null)
+                configError("missing double " + key);
 
-	    return Double.parseDouble(value);
-	}
-	catch (NumberFormatException e) {
-	    configError(key + " should be a double");
+            return Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            configError(key + " should be a double");
 
-	    Lib.assertNotReached();
-	    return 0;
-	}
+            Lib.assertNotReached();
+            return 0;
+        }
     }
 
     /**
      * Get the value of a boolean key in <tt>nachos.conf</tt>.
      *
-     * @param	key	the key to look up.
-     * @return	the value of the specified key.
+     * @param    key    the key to look up.
+     * @return the value of the specified key.
      */
     public static boolean getBoolean(String key) {
-	String value = getString(key);
+        String value = getString(key);
 
-	if (value == null)
-	    configError("missing boolean " + key);
+        if (value == null)
+            configError("missing boolean " + key);
 
-	if (value.equals("1") || value.toLowerCase().equals("true")) {
-	    return true;
-	}
-	else if (value.equals("0") || value.toLowerCase().equals("false")) {
-	    return false;
-	}
-	else {
-	    configError(key + " should be a boolean");
+        if (value.equals("1") || value.toLowerCase().equals("true")) {
+            return true;
+        } else if (value.equals("0") || value.toLowerCase().equals("false")) {
+            return false;
+        } else {
+            configError(key + " should be a boolean");
 
-	    Lib.assertNotReached();
-	    return false;
-	}
+            Lib.assertNotReached();
+            return false;
+        }
     }
 
     private static boolean loaded = false;

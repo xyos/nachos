@@ -10,11 +10,11 @@ public interface FileSystem {
      * Atomically open a file, optionally creating it if it does not already
      * exist.
      *
-     * @param	name	the name of the file to open.
-     * @param	create	<tt>true</tt> to create the file if it does not already
-     * 			exist, or truncate it to zero length if it does exist.
-     * @return	an <tt>OpenFile</tt> representing a new instance of the opened
-     *		file, or <tt>null</tt> if the file could not be opened.
+     * @param    name    the name of the file to open.
+     * @param    create    <tt>true</tt> to create the file if it does not already
+     * exist, or truncate it to zero length if it does exist.
+     * @return an <tt>OpenFile</tt> representing a new instance of the opened
+     * file, or <tt>null</tt> if the file could not be opened.
      */
     public OpenFile open(String name, boolean create);
 
@@ -24,8 +24,8 @@ public interface FileSystem {
      * already open, it is up to the implementation to decide whether the file
      * can still be accessed or if it is deleted immediately.
      *
-     * @param	name	the name of the file to remove.
-     * @return	<tt>true</tt> if the file was successfully removed.
+     * @param    name    the name of the file to remove.
+     * @return    <tt>true</tt> if the file was successfully removed.
      */
     public boolean remove(String name);
 }

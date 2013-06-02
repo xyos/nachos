@@ -1,6 +1,7 @@
 package nachos.threads;
 
-import nachos.machine.*;
+import nachos.machine.ElevatorControllerInterface;
+import nachos.machine.ElevatorControls;
 
 /**
  * A controller for all the elevators in an elevator bank. The controller
@@ -12,7 +13,7 @@ public class ElevatorController implements ElevatorControllerInterface {
      */
     public ElevatorController() {
     }
-    
+
     /**
      * Initialize this elevator controller. The controller will access the
      * elevator bank through <i>controls</i>. This constructor should return
@@ -21,9 +22,9 @@ public class ElevatorController implements ElevatorControllerInterface {
      * after this method returns, but potentially before <tt>run()</tt> is
      * called.
      *
-     * @param	controls	the controller's interface to the elevator
-     *				bank. The controler must not attempt to access
-     *				the elevator bank in <i>any</i> other way.
+     * @param    controls    the controller's interface to the elevator
+     * bank. The controler must not attempt to access
+     * the elevator bank in <i>any</i> other way.
      */
     public void initialize(ElevatorControls controls) {
     }

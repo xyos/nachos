@@ -1,27 +1,25 @@
 package nachos.threads;
 
-import nachos.machine.*;
-
 /**
  * An implementation of condition variables that disables interrupt()s for
  * synchronization.
- *
- * <p>
+ * <p/>
+ * <p/>
  * You must implement this.
  *
- * @see	nachos.threads.Condition
+ * @see    nachos.threads.Condition
  */
 public class Condition2 {
     /**
      * Allocate a new condition variable.
      *
-     * @param	conditionLock	the lock associated with this condition
-     *				variable. The current thread must hold this
-     *				lock whenever it uses <tt>sleep()</tt>,
-     *				<tt>wake()</tt>, or <tt>wakeAll()</tt>.
+     * @param    conditionLock    the lock associated with this condition
+     * variable. The current thread must hold this
+     * lock whenever it uses <tt>sleep()</tt>,
+     * <tt>wake()</tt>, or <tt>wakeAll()</tt>.
      */
     public Condition2(Lock conditionLock) {
-	this.conditionLock = conditionLock;
+        this.conditionLock = conditionLock;
     }
 
     /**
@@ -31,11 +29,11 @@ public class Condition2 {
      * automatically reacquire the lock before <tt>sleep()</tt> returns.
      */
     public void sleep() {
-	assert(conditionLock.isHeldByCurrentThread());
+        assert (conditionLock.isHeldByCurrentThread());
 
-	conditionLock.release();
+        conditionLock.release();
 
-	conditionLock.acquire();
+        conditionLock.acquire();
     }
 
     /**
@@ -43,7 +41,7 @@ public class Condition2 {
      * current thread must hold the associated lock.
      */
     public void wake() {
-	assert(conditionLock.isHeldByCurrentThread());
+        assert (conditionLock.isHeldByCurrentThread());
     }
 
     /**
@@ -51,7 +49,7 @@ public class Condition2 {
      * thread must hold the associated lock.
      */
     public void wakeAll() {
-	assert(conditionLock.isHeldByCurrentThread());
+        assert (conditionLock.isHeldByCurrentThread());
     }
 
     private Lock conditionLock;

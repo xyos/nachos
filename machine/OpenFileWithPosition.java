@@ -13,29 +13,29 @@ public abstract class OpenFileWithPosition extends OpenFile {
     }
 
     public void seek(int position) {
-	this.position = position;
+        this.position = position;
     }
 
     public int tell() {
-	return position;
+        return position;
     }
 
     public int read(byte[] buf, int offset, int length) {
-	int amount = read(position, buf, offset, length);
-	if (amount == -1)
-	    return -1;
-	
-	position += amount;
-	return amount;
+        int amount = read(position, buf, offset, length);
+        if (amount == -1)
+            return -1;
+
+        position += amount;
+        return amount;
     }
 
     public int write(byte[] buf, int offset, int length) {
-	int amount = write(position, buf, offset, length);
-	if (amount == -1)
-	    return -1;
-	
-	position += amount;
-	return amount;
+        int amount = write(position, buf, offset, length);
+        if (amount == -1)
+            return -1;
+
+        position += amount;
+        return amount;
     }
 
     /**

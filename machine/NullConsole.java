@@ -2,7 +2,7 @@
 
 package nachos.machine;
 
-import nachos.security.*;
+import nachos.security.Privilege;
 
 /**
  * A null console device.
@@ -10,15 +10,15 @@ import nachos.security.*;
 public class NullConsole implements SerialConsole {
     public void init(Privilege privilege) {
     }
-    
+
     public void setInterruptHandlers(Runnable receiveInterruptHandler,
-				     Runnable sendInterruptHandler) {
+                                     Runnable sendInterruptHandler) {
     }
 
-    public int	readByte() {
-	return -1;
+    public int readByte() {
+        return -1;
     }
-    
+
     public void writeByte(int value) {
     }
 }

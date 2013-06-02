@@ -2,9 +2,11 @@
 
 package nachos.ag;
 
-import nachos.machine.*;
-import nachos.security.*;
-import nachos.threads.*;
+import nachos.machine.Config;
+import nachos.machine.Kernel;
+import nachos.machine.Lib;
+import nachos.security.Privilege;
+import nachos.threads.KThread;
 
 import java.util.Hashtable;
 import java.util.StringTokenizer;
@@ -25,120 +27,117 @@ public class AutoGrader {
      * <tt>init()</tt>, load and initialize the kernel, and call
      * <tt>run()</tt>.
      *
-     * @param	privilege      	encapsulates privileged access to the Nachos
-     * 				machine.
-     * @param	args		the command line arguments to Nachos.
+     * @param    privilege encapsulates privileged access to the Nachos
+     * machine.
+     * @param    args        the command line arguments to Nachos.
      */
     public void start(Privilege privilege, String[] args) {
-	assert(this.privilege == null);
-	this.privilege = privilege;
+        assert (this.privilege == null);
+        this.privilege = privilege;
 
-	extractArguments(args);
+        extractArguments(args);
 
-	System.out.print(" grader");
+        System.out.print(" grader");
 
-	init();
+        init();
 
-	System.out.print("\n");	
+        System.out.print("\n");
 
-	kernel =
-	    (Kernel) Lib.constructObject(Config.getString("Kernel.kernel"));
-	kernel.initialize(args);
+        kernel =
+                (Kernel) Lib.constructObject(Config.getString("Kernel.kernel"));
+        kernel.initialize(args);
 
-	run();
+        run();
     }
 
     private void extractArguments(String[] args) {
-	String testArgsString = "";
-	
-	for (int i=0; i<args.length; ) {
-	    String arg = args[i++];
-	    if (arg.length() > 0 && arg.charAt(0) == '-') {
-		if (arg.equals("-#")) {
-		    assert(i < args.length);
-		    testArgsString = args[i++];
-		}
-	    }
-	}
+        String testArgsString = "";
 
-	StringTokenizer st = new StringTokenizer(testArgsString);
+        for (int i = 0; i < args.length; ) {
+            String arg = args[i++];
+            if (arg.length() > 0 && arg.charAt(0) == '-') {
+                if (arg.equals("-#")) {
+                    assert (i < args.length);
+                    testArgsString = args[i++];
+                }
+            }
+        }
 
-	while (st.hasMoreTokens()) {
-	    StringTokenizer pair = new StringTokenizer(st.nextToken(), "=");
+        StringTokenizer st = new StringTokenizer(testArgsString);
 
-	    assert(pair.hasMoreTokens());
-	    String key = pair.nextToken();
+        while (st.hasMoreTokens()) {
+            StringTokenizer pair = new StringTokenizer(st.nextToken(), "=");
 
-	    assert(pair.hasMoreTokens());
-	    String value = pair.nextToken();
+            assert (pair.hasMoreTokens());
+            String key = pair.nextToken();
 
-	    testArgs.put(key, value);
-	}	
+            assert (pair.hasMoreTokens());
+            String value = pair.nextToken();
+
+            testArgs.put(key, value);
+        }
     }
 
     String getStringArgument(String key) {
-	String value = (String) testArgs.get(key);
-	assert(value != null);
-	return value;
+        String value = (String) testArgs.get(key);
+        assert (value != null);
+        return value;
     }
 
     int getIntegerArgument(String key) {
-	try {
-	    return Integer.parseInt(getStringArgument(key));
-	}
-	catch (NumberFormatException e) {
-	    Lib.assertNotReached();
-	    return 0;
-	}
+        try {
+            return Integer.parseInt(getStringArgument(key));
+        } catch (NumberFormatException e) {
+            Lib.assertNotReached();
+            return 0;
+        }
     }
 
     boolean getBooleanArgument(String key) {
-	String value = getStringArgument(key);
+        String value = getStringArgument(key);
 
-	if (value.equals("1") || value.toLowerCase().equals("true")) {
-	    return true;
-	}
-	else if (value.equals("0") || value.toLowerCase().equals("false")) {
-	    return false;
-	}
-	else {
-	    Lib.assertNotReached();
-	    return false;
-	}	
+        if (value.equals("1") || value.toLowerCase().equals("true")) {
+            return true;
+        } else if (value.equals("0") || value.toLowerCase().equals("false")) {
+            return false;
+        } else {
+            Lib.assertNotReached();
+            return false;
+        }
     }
 
     long getTime() {
-	return privilege.stats.totalTicks;
+        return privilege.stats.totalTicks;
     }
 
     void targetLevel(int targetLevel) {
-	this.targetLevel = targetLevel;
+        this.targetLevel = targetLevel;
     }
 
     void level(int level) {
-	this.level++;	
-	assert(level == this.level);
-	
-	if (level == targetLevel)
-	    done();
+        this.level++;
+        assert (level == this.level);
+
+        if (level == targetLevel)
+            done();
     }
 
     private int level = 0, targetLevel = 0;
 
     void done() {
-	System.out.print("\nsuccess\n");
-	privilege.exit(162);
+        System.out.print("\nsuccess\n");
+        privilege.exit(162);
     }
 
     private Hashtable testArgs = new Hashtable();
 
     void init() {
     }
-    
+
     void run() {
-	kernel.selfTest();
-	kernel.run();
-	kernel.terminate();
+        kernel.selfTest();
+        kernel.run();
+        kernel.terminate();
     }
 
     Privilege privilege = null;
@@ -149,7 +148,7 @@ public class AutoGrader {
      * <tt>KThread.createIdleThread()</tt> <i>must</i> call this method before
      * forking the idle thread.
      *
-     * @param	idleThread	the idle thread.
+     * @param    idleThread    the idle thread.
      */
     public void setIdleThread(KThread idleThread) {
     }
@@ -159,7 +158,7 @@ public class AutoGrader {
      * state. <tt>KThread.ready()</tt> <i>must</i> call this method before
      * returning.
      *
-     * @param	thread	the thread that has been added to the ready set.
+     * @param    thread    the thread that has been added to the ready set.
      */
     public void readyThread(KThread thread) {
     }
@@ -169,11 +168,11 @@ public class AutoGrader {
      * <tt>KThread.restoreState()</tt> <i>must</i> call this method before
      * returning.
      *
-     * @param	thread	the thread that is now running.
+     * @param    thread    the thread that is now running.
      */
     public void runningThread(KThread thread) {
-	privilege.tcb.associateThread(thread);
-	currentThread = thread;
+        privilege.tcb.associateThread(thread);
+        currentThread = thread;
     }
 
     /**
@@ -182,7 +181,7 @@ public class AutoGrader {
      * the thread to sleep and scheduling its TCB to be destroyed.
      */
     public void finishingCurrentThread() {
-	privilege.tcb.authorizeDestroy(currentThread);
+        privilege.tcb.authorizeDestroy(currentThread);
     }
 
     /**
@@ -190,24 +189,24 @@ public class AutoGrader {
      * software if a timer interrupt handler was installed. Called by the
      * hardware timer.
      *
-     * @param	privilege	proves the authenticity of this call.
-     * @param	time	the actual time at which the timer interrupt was
-     *			issued.
+     * @param    privilege    proves the authenticity of this call.
+     * @param    time    the actual time at which the timer interrupt was
+     * issued.
      */
     public void timerInterrupt(Privilege privilege, long time) {
-	assert(privilege == this.privilege);
+        assert (privilege == this.privilege);
     }
 
     /**
      * Notify the autograder that a user program executed a syscall instruction
      * was executed.
      *
-     * @param	privilege	proves the authenticity of this call.
-     * @return	<tt>true</tt> if the kernel exception handler should be called.
+     * @param    privilege    proves the authenticity of this call.
+     * @return    <tt>true</tt> if the kernel exception handler should be called.
      */
     public boolean exceptionHandler(Privilege privilege) {
-	assert(privilege == this.privilege);
-	return true;
+        assert (privilege == this.privilege);
+        return true;
     }
 
     private KThread currentThread;
